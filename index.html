@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fff7f3" />
+    <meta name="description" content="A tiny four-board Wordle made with love." />
+    <title>Our Little Wordle</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="background-heart heart-one" aria-hidden="true">♥</div>
+    <div class="background-heart heart-two" aria-hidden="true">♥</div>
+    <div class="background-heart heart-three" aria-hidden="true">♥</div>
+
+    <div class="app-shell">
+      <header class="hero" aria-labelledby="game-title">
+        <p class="eyebrow"><span aria-hidden="true">✦</span> a tiny game for my favorite person <span aria-hidden="true">✦</span></p>
+        <h1 id="game-title">Our little <em>Wordle</em></h1>
+        <p class="subtitle">Four little words. One very big love story.</p>
+        <div class="score-pill" aria-label="Game progress">
+          <span id="progress-text">0 / 4 solved</span>
+          <span class="pill-divider" aria-hidden="true"></span>
+          <span id="attempt-text">0 / 9 guesses</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="game-card" aria-label="Wordle game">
+          <div class="game-card-heading">
+            <div>
+              <p class="section-kicker">The mission</p>
+              <h2>Can you find all four?</h2>
+            </div>
+            <div class="tiny-sparkle" aria-hidden="true">✧</div>
+          </div>
+          <p class="instructions">Every guess plays on every board. You have nine tries to uncover the message hiding in plain sight.</p>
+
+          <div id="boards" class="boards" aria-label="Four Wordle boards"></div>
+
+          <div id="keyboard" class="keyboard" aria-label="On-screen keyboard"></div>
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+
+          <button id="restart-button" class="text-button" type="button">
+            <span aria-hidden="true">↻</span> Start over
+          </button>
+        </section>
+
+        <section id="finale" class="finale" hidden aria-labelledby="finale-title">
+          <div class="confetti confetti-left" aria-hidden="true">✦</div>
+          <div class="confetti confetti-right" aria-hidden="true">✦</div>
+          <div class="finale-hearts" aria-hidden="true"><span>♥</span><span>♥</span><span>♥</span></div>
+          <p class="section-kicker">You did it</p>
+          <h2 id="finale-title">Happy three month anniv<span class="sparkle-dot">.</span></h2>
+          <p class="finale-message" id="finale-message"></p>
+          <p class="finale-signoff">made with all my heart</p>
+          <button id="play-again-button" class="primary-button" type="button">Play again <span aria-hidden="true">♥</span></button>
+        </section>
+      </main>
+
+      <footer class="footer-note">Psst… the last word is a little surprise <span aria-hidden="true">♡</span></footer>
+    </div>
+  </body>
+</html>
