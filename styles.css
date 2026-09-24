@@ -167,9 +167,9 @@ h1 em { color: var(--pink); font-style: normal; }
 .typing-hint { margin: 0; color: #a58d96; font-size: 0.74rem; }
 .typing-hint span { margin-right: 4px; color: var(--pink); }
 .typing-input {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  bottom: 0;
+  top: 0;
   width: 2px;
   height: 2px;
   padding: 0;
