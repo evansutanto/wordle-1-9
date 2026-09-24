@@ -11,7 +11,7 @@ const PUZZLES = [
 
 const MAX_GUESSES = 9;
 const STORAGE_KEY = "our-little-wordle-state-v1";
-const FINALE_MESSAGE = "Three months with you already feels like the sweetest little adventure. I love you more every day. 💕";
+const FINALE_MESSAGE = "To more scratching my head bro...";
 
 // A compact, common five-letter dictionary keeps the page self-contained.
 // The four private answers are explicitly added below, including ANNIV.
