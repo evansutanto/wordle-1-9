@@ -39,7 +39,10 @@
 
           <div id="boards" class="boards" aria-label="Four Wordle boards"></div>
 
-          <div id="keyboard" class="keyboard" aria-label="On-screen keyboard"></div>
+          <div class="typing-zone">
+            <p class="typing-hint"><span aria-hidden="true">⌨</span> Tap a board, then type your five-letter guess</p>
+            <input id="guess-input" class="typing-input" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" autocapitalize="characters" maxlength="5" aria-label="Current five-letter guess" />
+          </div>
           <p id="status" class="status" role="status" aria-live="polite"></p>
 
           <button id="restart-button" class="text-button" type="button">

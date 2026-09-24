@@ -135,7 +135,7 @@ h1 em { color: var(--pink); font-style: normal; }
 }
 
 .clue-button:hover, .clue-button:focus-visible { background: #f5cbd3; }
-.clue-button:focus-visible, .text-button:focus-visible, .primary-button:focus-visible, .key:focus-visible { outline: 3px solid rgba(233, 111, 134, 0.42); outline-offset: 2px; }
+.clue-button:focus-visible, .text-button:focus-visible, .primary-button:focus-visible { outline: 3px solid rgba(233, 111, 134, 0.42); outline-offset: 2px; }
 .clue-text { display: none; margin: -3px 0 9px; color: var(--pink-dark); font-size: 0.67rem; font-weight: 600; }
 .clue-text.is-visible { display: block; }
 
@@ -158,31 +158,26 @@ h1 em { color: var(--pink); font-style: normal; }
 }
 
 .tile.is-filled { border-color: #cfaeb7; animation: pop 110ms ease-out; }
-.tile.is-green, .key.is-green { border-color: #7bb897; color: #fff; background: #75b58f; }
-.tile.is-yellow, .key.is-yellow { border-color: #d5ad5e; color: #fff; background: #d5ae60; }
-.tile.is-gray, .key.is-gray { border-color: #a999a0; color: #fff; background: #a999a0; }
+.tile.is-green { border-color: #7bb897; color: #fff; background: #75b58f; }
+.tile.is-yellow { border-color: #d5ad5e; color: #fff; background: #d5ae60; }
+.tile.is-gray { border-color: #a999a0; color: #fff; background: #a999a0; }
 .tile.is-flipping { animation: flip 500ms ease both; }
 
-.keyboard { display: grid; gap: 7px; max-width: 620px; margin: 28px auto 0; }
-.keyboard-row { display: flex; justify-content: center; gap: 5px; }
-.key {
-  min-width: 0;
-  flex: 1;
-  height: 45px;
-  padding: 0 4px;
-  border: 1px solid #ead9de;
-  border-radius: 8px;
-  color: var(--ink);
-  background: #f7eef0;
-  font-size: clamp(0.7rem, 2vw, 0.84rem);
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 100ms ease, background 150ms ease;
-  -webkit-tap-highlight-color: transparent;
+.typing-zone { position: relative; margin-top: 25px; text-align: center; }
+.typing-hint { margin: 0; color: #a58d96; font-size: 0.74rem; }
+.typing-hint span { margin-right: 4px; color: var(--pink); }
+.typing-input {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 2px;
+  height: 2px;
+  padding: 0;
+  border: 0;
+  opacity: 0.01;
+  pointer-events: none;
 }
-.key:hover { background: #f2e3e7; }
-.key:active { transform: translateY(2px); }
-.key.wide { flex: 1.5; font-size: 0.66rem; }
+.typing-input:focus { outline: none; }
 
 .status { min-height: 1.35em; margin: 17px 0 0; color: var(--pink-dark); font-size: 0.8rem; font-weight: 700; text-align: center; }
 .text-button { display: block; margin: 10px auto 0; border: 0; color: var(--muted); background: transparent; font-size: 0.77rem; cursor: pointer; }
@@ -226,10 +221,7 @@ h1 em { color: var(--pink); font-style: normal; }
   .board-label { font-size: 0.7rem; }
   .clue-button, .mystery-label { padding: 4px 6px; font-size: 0.56rem; }
   .grid, .grid-row { gap: 3px; }
-  .keyboard { margin-top: 20px; gap: 5px; }
-  .keyboard-row { gap: 3px; }
-  .key { height: 42px; border-radius: 7px; }
-  .key.wide { font-size: 0.57rem; }
+  .typing-zone { margin-top: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

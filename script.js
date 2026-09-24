@@ -28,12 +28,12 @@ const state = {
 };
 
 const boardsElement = document.querySelector("#boards");
-const keyboardElement = document.querySelector("#keyboard");
 const statusElement = document.querySelector("#status");
 const progressElement = document.querySelector("#progress-text");
 const attemptElement = document.querySelector("#attempt-text");
 const gameCardElement = document.querySelector(".game-card");
 const finaleElement = document.querySelector("#finale");
+const guessInput = document.querySelector("#guess-input");
 document.querySelector("#finale-message").textContent = FINALE_MESSAGE;
 
 function loadState() {
@@ -173,46 +173,17 @@ function updateHeader() {
   attemptElement.textContent = `${state.guesses.length} / ${MAX_GUESSES} guesses`;
 }
 
-function renderKeyboard() {
-  const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
-  keyboardElement.innerHTML = rows.map((row, rowIndex) => `
-    <div class="keyboard-row">
-      ${rowIndex === 2 ? `<button type="button" class="key wide" data-key="BACKSPACE" aria-label="Backspace">⌫</button>` : ""}
-      ${[...row].map((letter) => `<button type="button" class="key" data-key="${letter}">${letter}</button>`).join("")}
-      ${rowIndex === 2 ? `<button type="button" class="key wide" data-key="ENTER">enter</button>` : ""}
-    </div>
-  `).join("");
-  keyboardElement.querySelectorAll(".key").forEach((key) => key.addEventListener("click", () => handleKey(key.dataset.key)));
-  updateKeyboardStatuses();
-}
-
-function updateKeyboardStatuses() {
-  const priorities = { gray: 1, yellow: 2, green: 3 };
-  const statuses = {};
-  state.guesses.forEach((guess) => {
-    PUZZLES.forEach((puzzle) => {
-      scoreGuess(guess, puzzle.answer).forEach((result, index) => {
-        const letter = guess[index];
-        if (!statuses[letter] || priorities[result] > priorities[statuses[letter]]) statuses[letter] = result;
-      });
-    });
-  });
-  keyboardElement.querySelectorAll(".key").forEach((key) => {
-    const letterStatus = statuses[key.dataset.key];
-    key.classList.remove("is-gray", "is-yellow", "is-green");
-    if (letterStatus) key.classList.add(`is-${letterStatus}`);
-  });
-}
-
 function handleKey(key) {
   if (state.gameOver) return;
   if (key === "ENTER") submitGuess();
   else if (key === "BACKSPACE") {
     state.currentGuess = (state.currentGuess || "").slice(0, -1);
+    guessInput.value = state.currentGuess;
     renderCurrentGuess();
     setStatus("");
   } else if (/^[A-Z]$/.test(key) && (state.currentGuess || "").length < 5) {
     state.currentGuess = `${state.currentGuess || ""}${key}`;
+    guessInput.value = state.currentGuess;
     renderCurrentGuess();
     setStatus("");
   }
@@ -235,6 +206,7 @@ function submitGuess() {
   state.guesses.push(guess);
   state.statuses.push(PUZZLES.map((puzzle) => scoreGuess(guess, puzzle.answer)));
   state.currentGuess = "";
+  guessInput.value = "";
   PUZZLES.forEach((puzzle, boardIndex) => {
     if (guess === puzzle.answer) state.solved[boardIndex] = true;
     const board = boardsElement.querySelector(`[data-board-index="${boardIndex}"]`);
@@ -244,8 +216,6 @@ function submitGuess() {
   });
   saveState();
   updateHeader();
-  updateKeyboardStatuses();
-
   if (state.solved.every(Boolean)) {
     state.won = true;
     state.gameOver = true;
@@ -277,12 +247,12 @@ function resetGame() {
   state.gameOver = false;
   state.won = false;
   state.currentGuess = "";
+  guessInput.value = "";
   try { localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
   finaleElement.hidden = true;
   gameCardElement.hidden = false;
   renderBoards();
   updateHeader();
-  renderKeyboard();
   setStatus("Fresh start! I’m cheering for you ♥");
 }
 
@@ -292,7 +262,31 @@ function showFinale() {
   finaleElement.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+function focusGuessInput() {
+  if (!state.gameOver) guessInput.focus({ preventScroll: true });
+}
+
+guessInput.addEventListener("input", () => {
+  const cleaned = guessInput.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 5);
+  guessInput.value = cleaned;
+  state.currentGuess = cleaned;
+  renderCurrentGuess();
+  setStatus("");
+});
+
+guessInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    submitGuess();
+  }
+});
+
+boardsElement.addEventListener("click", (event) => {
+  if (!event.target.closest(".clue-button")) focusGuessInput();
+});
+
 document.addEventListener("keydown", (event) => {
+  if (event.target === guessInput) return;
   if (event.key === "Enter") handleKey("ENTER");
   else if (event.key === "Backspace") handleKey("BACKSPACE");
   else if (/^[a-zA-Z]$/.test(event.key)) handleKey(event.key.toUpperCase());
@@ -304,7 +298,6 @@ document.querySelector("#play-again-button").addEventListener("click", resetGame
 loadState();
 renderBoards();
 updateHeader();
-renderKeyboard();
 if (state.won) showFinale();
 else if (state.gameOver) setStatus("This round is over — start over for another try ✿");
 else setStatus("Pick a word and let the butterflies begin ✿");
