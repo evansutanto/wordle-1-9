@@ -16,6 +16,8 @@ Then open <http://localhost:8000>.
 
 Edit the `PUZZLES` and `FINALE_MESSAGE` constants near the top of [script.js](script.js). Any five-letter guess is accepted, including entries like `AAAAA`.
 
+To enable the music button, add an authorized recording at `assets/three-little-words.mp3`. Music starts after the player taps the button because browsers block reliable autoplay.
+
 ## Publish on GitHub Pages
 
 Push the three site files (`index.html`, `styles.css`, and `script.js`) to a repository, then choose **Settings → Pages → Deploy from a branch** and select the branch and root folder. GitHub Pages will serve `index.html` automatically.

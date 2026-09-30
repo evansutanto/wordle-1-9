@@ -77,6 +77,24 @@ h1 {
 
 .pill-divider { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
 
+.sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 17px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sound-toggle:hover, .sound-toggle[aria-pressed="true"] { border-color: rgba(158, 47, 74, 0.32); color: var(--pink-dark); background: var(--blush); }
+.sound-toggle:focus-visible { outline: 3px solid rgba(200, 62, 97, 0.38); outline-offset: 2px; }
+.sound-icon { min-width: 1em; font-size: 1rem; line-height: 1; }
+
 .game-card, .finale {
   position: relative;
   margin-top: 28px;

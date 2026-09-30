@@ -4,7 +4,7 @@
  */
 const PUZZLES = [
   { id: "happy", answer: "HAPPY", label: "a feeling", clue: "How you make me feel" },
-  { id: "three", answer: "THREE", label: "a number", clue: "What is (18 ÷ 3) − 3?" },
+  { id: "three", answer: "THREE", label: "a number", clue: "Solve for positive x: x² − 6x + 9 = 0" },
   { id: "month", answer: "MONTH", label: "a little chapter", clue: "One twelfth of a year" },
   { id: "anniv", answer: "ANNIV", label: "the mystery", clue: null },
 ];
@@ -31,6 +31,10 @@ const gameCardElement = document.querySelector(".game-card");
 const finaleElement = document.querySelector("#finale");
 const guessInput = document.querySelector("#guess-input");
 const guessTrayElement = document.querySelector("#guess-tray");
+const soundToggle = document.querySelector("#sound-toggle");
+const soundIcon = document.querySelector("#sound-icon");
+const soundLabel = document.querySelector("#sound-label");
+const backgroundAudio = document.querySelector("#background-audio");
 const failureModal = document.querySelector("#failure-modal");
 const modalRestartButton = document.querySelector("#modal-restart-button");
 const failureDismissButton = document.querySelector("#failure-dismiss-button");
@@ -252,6 +256,26 @@ function shakeBoards() {
 
 function setStatus(message) { statusElement.textContent = message; }
 
+function updateSoundToggle() {
+  const isPlaying = !backgroundAudio.paused && !backgroundAudio.ended;
+  soundToggle.setAttribute("aria-pressed", String(isPlaying));
+  soundIcon.textContent = isPlaying ? "Ⅱ" : "♫";
+  soundLabel.textContent = isPlaying ? "Pause music" : "Play music";
+}
+
+async function toggleSound() {
+  if (backgroundAudio.paused) {
+    try {
+      await backgroundAudio.play();
+    } catch {
+      setStatus("Add assets/three-little-words.mp3 to play the music.");
+    }
+  } else {
+    backgroundAudio.pause();
+  }
+  updateSoundToggle();
+}
+
 function showFailureModal() {
   if (state.won || !state.gameOver) return;
   lastFocusedElement = document.activeElement;
@@ -326,6 +350,9 @@ document.addEventListener("keydown", (event) => {
 
 document.querySelector("#restart-button").addEventListener("click", resetGame);
 document.querySelector("#play-again-button").addEventListener("click", resetGame);
+soundToggle.addEventListener("click", toggleSound);
+backgroundAudio.addEventListener("play", updateSoundToggle);
+backgroundAudio.addEventListener("pause", updateSoundToggle);
 modalRestartButton.addEventListener("click", resetGame);
 failureDismissButton.addEventListener("click", hideFailureModal);
 failureReviewButton.addEventListener("click", hideFailureModal);
