@@ -13,11 +13,7 @@ const MAX_GUESSES = 9;
 const STORAGE_KEY = "our-little-wordle-state-v1";
 const FINALE_MESSAGE = "To more scratching my head bro...";
 
-// A compact, common five-letter dictionary keeps the page self-contained.
-// The four private answers are explicitly added below, including ANNIV.
-const WORDS = new Set(`
-about above abuse actor acute adapt admit adopt adult after again agent agree ahead alarm album alert alike alive allow alone along alter among anger angle angry apart apple apply arena argue arise armor array aside asset audio audit avoid award aware awful bacon badge badly baker basic beach began begin being below bench berry birth black blade blame blank blast blaze bleak blend bless blind block blood bloom blown board boast bonus booth bound brain brake brand brave bread break brick bride brief bring broad broke brown brush build built bunch burst buyer cable candy carry catch cause chain chair chalk champ chaos charm chart chase cheap check cheek cheer chess chief child china chose church cigar civil claim class clean clear clerk click climb clock close cloth cloud coach coast color comic comma coral couch could count court cover craft crash crazy cream crime crisp cross crowd crown crude crush curve cycle daily dairy dealt death debut delay depth devil diary dirty doubt dozen draft drama drawn dream dress drill drink drive dwarf eager early earth eight elbow elite empty enemy enjoy enter entry equal error event every exact extra faith false fancy fatal fault favor feast fence fewer fiber field fifth fifty fight final first fixed flame flash fleet floor flour focus force frame frank fraud fresh front frost fruit funny giant given glass globe glory glove going grace grade grain grand grant grape graph grasp grass great green greet grief grind gross group grove grown guard guess guest guide habit happy harsh haste haven heart heavy hello hence honey honor horse hotel house human humor ideal image imply index inner input intro issue ivory jelly jewel joint judge juice juicy knock known label labor large later laugh layer learn lease least leave legal lemon level light limit local logic loose lucky lunch magic major maker maple march marry match maybe mayor medal media medic mercy merry metal meter might minor minus model money month moral motor mount mouse movie music naive nerve never newly night noble noise north noted novel nurse occur ocean offer often olive onion opera order other ought outer owner paint panel panic paper party pasta patch pause peace peach pearl penny phase phone photo piano piece pilot pitch place plain plane plant plate point power press price pride prime print prize proof proud prove queen quick quiet quite radio raise range rapid ratio reach ready realm rebel refer relax reply right rival river roast robot rough round route royal rural saint salad sauce scale scare scene scent scope score scout scrap screw serve setup seven shade shake shame shape share shark sharp sheet shelf shell shift shine shirt shock shoot short shout shown sight since sixth sixty skate skill skirt sleep slice slide small smart smell smile smoke snack snake solar solid solve sorry sound south space spare speak spear speed spell spend spent spice spite split sport spray squad stack staff stage stair stake stand start state steam steel steep steer stick still stock stone stood store storm story strip stuck study stuff style sugar suite sunny super sweet swing table taken taste teach tears teeth thank their theme there thick thing think third those three threw throw tight timer tired title toast today token topic total touch tough tower trace track trade trail train treat trend trial tribe trick tried truck truly trust truth twice uncle under union unity until upper upset urban usage usual valid value video visit vital vivid voice waste watch water wheel where which while white whole whose woman women worry worth would wound write wrong yacht young youth`.split(/\s+/).filter(Boolean));
-PUZZLES.forEach(({ answer }) => WORDS.add(answer.toLowerCase()));
+// Any five-letter entry is valid; the game scores it against every board.
 
 const state = {
   guesses: [],
@@ -34,7 +30,15 @@ const attemptElement = document.querySelector("#attempt-text");
 const gameCardElement = document.querySelector(".game-card");
 const finaleElement = document.querySelector("#finale");
 const guessInput = document.querySelector("#guess-input");
+const guessTrayElement = document.querySelector("#guess-tray");
+const failureModal = document.querySelector("#failure-modal");
+const modalRestartButton = document.querySelector("#modal-restart-button");
+const failureDismissButton = document.querySelector("#failure-dismiss-button");
+const failureReviewButton = document.querySelector("#failure-review-button");
 document.querySelector("#finale-message").textContent = FINALE_MESSAGE;
+
+let failureModalTimer;
+let lastFocusedElement;
 
 function loadState() {
   try {
@@ -98,6 +102,7 @@ function renderBoards() {
       const row = document.createElement("div");
       row.className = "grid-row";
       row.setAttribute("role", "row");
+      row.setAttribute("aria-label", `Guess ${rowIndex + 1}`);
       for (let letterIndex = 0; letterIndex < 5; letterIndex += 1) {
         const tile = document.createElement("div");
         tile.className = "tile";
@@ -165,6 +170,17 @@ function renderCurrentGuess() {
       tile.setAttribute("aria-label", letter ? `${letter}, current guess` : "empty");
     });
   });
+  renderGuessTray();
+}
+
+function renderGuessTray() {
+  const currentGuess = state.currentGuess || "";
+  [...guessTrayElement.querySelectorAll(".guess-slot")].forEach((slot, index) => {
+    const letter = currentGuess[index] || "";
+    slot.textContent = letter;
+    slot.className = letter ? "guess-slot is-filled" : "guess-slot";
+  });
+  guessTrayElement.setAttribute("aria-label", currentGuess ? `Current guess: ${[...currentGuess].join(" ")}` : "Current guess, empty");
 }
 
 function updateHeader() {
@@ -196,17 +212,12 @@ function submitGuess() {
     shakeBoards();
     return;
   }
-  if (!WORDS.has(guess.toLowerCase())) {
-    setStatus("That one isn't in my little dictionary yet ✿");
-    shakeBoards();
-    return;
-  }
-
   const rowIndex = state.guesses.length;
   state.guesses.push(guess);
   state.statuses.push(PUZZLES.map((puzzle) => scoreGuess(guess, puzzle.answer)));
   state.currentGuess = "";
   guessInput.value = "";
+  renderGuessTray();
   PUZZLES.forEach((puzzle, boardIndex) => {
     if (guess === puzzle.answer) state.solved[boardIndex] = true;
     const board = boardsElement.querySelector(`[data-board-index="${boardIndex}"]`);
@@ -224,6 +235,7 @@ function submitGuess() {
   } else if (state.guesses.length >= MAX_GUESSES) {
     state.gameOver = true;
     setStatus("So close! Start over and try again for the big reveal ✿");
+    failureModalTimer = window.setTimeout(showFailureModal, 450);
   } else {
     const remaining = PUZZLES.length - state.solved.filter(Boolean).length;
     setStatus(`${remaining} little ${remaining === 1 ? "word" : "words"} still hiding ✿`);
@@ -240,7 +252,25 @@ function shakeBoards() {
 
 function setStatus(message) { statusElement.textContent = message; }
 
+function showFailureModal() {
+  if (state.won || !state.gameOver) return;
+  lastFocusedElement = document.activeElement;
+  failureModal.hidden = false;
+  document.body.classList.add("modal-open");
+  modalRestartButton.focus();
+}
+
+function hideFailureModal({ restoreFocus = true } = {}) {
+  failureModal.hidden = true;
+  document.body.classList.remove("modal-open");
+  const focusTarget = lastFocusedElement;
+  lastFocusedElement = null;
+  if (restoreFocus && focusTarget && typeof focusTarget.focus === "function") focusTarget.focus();
+}
+
 function resetGame() {
+  window.clearTimeout(failureModalTimer);
+  hideFailureModal({ restoreFocus: false });
   state.guesses = [];
   state.statuses = [];
   state.solved = PUZZLES.map(() => false);
@@ -252,11 +282,13 @@ function resetGame() {
   finaleElement.hidden = true;
   gameCardElement.hidden = false;
   renderBoards();
+  renderCurrentGuess();
   updateHeader();
   setStatus("Fresh start! I’m cheering for you ♥");
 }
 
 function showFinale() {
+  hideFailureModal({ restoreFocus: false });
   gameCardElement.hidden = true;
   finaleElement.hidden = false;
   finaleElement.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -294,10 +326,23 @@ document.addEventListener("keydown", (event) => {
 
 document.querySelector("#restart-button").addEventListener("click", resetGame);
 document.querySelector("#play-again-button").addEventListener("click", resetGame);
+modalRestartButton.addEventListener("click", resetGame);
+failureDismissButton.addEventListener("click", hideFailureModal);
+failureReviewButton.addEventListener("click", hideFailureModal);
+failureModal.addEventListener("click", (event) => {
+  if (event.target.matches("[data-modal-dismiss]")) hideFailureModal();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !failureModal.hidden) hideFailureModal();
+});
 
 loadState();
 renderBoards();
+renderCurrentGuess();
 updateHeader();
 if (state.won) showFinale();
-else if (state.gameOver) setStatus("This round is over — start over for another try ✿");
+else if (state.gameOver) {
+  setStatus("This round is over — start over for another try ✿");
+  failureModalTimer = window.setTimeout(showFailureModal, 250);
+}
 else setStatus("Pick a word and let the butterflies begin ✿");

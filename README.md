@@ -14,7 +14,7 @@ Then open <http://localhost:8000>.
 
 ## Personalize
 
-Edit the `PUZZLES` and `FINALE_MESSAGE` constants near the top of [script.js](script.js). The game accepts the private answer `ANNIV` even though it is not a standard dictionary word.
+Edit the `PUZZLES` and `FINALE_MESSAGE` constants near the top of [script.js](script.js). Any five-letter guess is accepted, including entries like `AAAAA`.
 
 ## Publish on GitHub Pages
 

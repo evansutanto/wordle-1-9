@@ -10,16 +10,12 @@
     <script src="script.js" defer></script>
   </head>
   <body>
-    <div class="background-heart heart-one" aria-hidden="true">♥</div>
-    <div class="background-heart heart-two" aria-hidden="true">♥</div>
-    <div class="background-heart heart-three" aria-hidden="true">♥</div>
-
     <div class="app-shell">
       <header class="hero" aria-labelledby="game-title">
-        <p class="eyebrow"><span aria-hidden="true">✦</span> a tiny game for my favorite person <span aria-hidden="true">✦</span></p>
-        <h1 id="game-title">Our little <em>Wordle</em></h1>
+        <p class="eyebrow">A tiny game for my favorite person</p>
+        <h1 id="game-title">Our Little Wordle</h1>
         <p class="subtitle">Four little words. One very big love story.</p>
-        <div class="score-pill" aria-label="Game progress">
+        <div class="score-line" aria-label="Game progress">
           <span id="progress-text">0 / 4 solved</span>
           <span class="pill-divider" aria-hidden="true"></span>
           <span id="attempt-text">0 / 9 guesses</span>
@@ -29,18 +25,21 @@
       <main>
         <section class="game-card" aria-label="Wordle game">
           <div class="game-card-heading">
-            <div>
-              <p class="section-kicker">The mission</p>
-              <h2>Can you find all four?</h2>
-            </div>
-            <div class="tiny-sparkle" aria-hidden="true">✧</div>
+            <h2>Find the four hidden words</h2>
           </div>
-          <p class="instructions">Every guess plays on every board. You have nine tries to uncover the message hiding in plain sight.</p>
 
           <div id="boards" class="boards" aria-label="Four Wordle boards"></div>
 
           <div class="typing-zone">
-            <p class="typing-hint"><span aria-hidden="true">⌨</span> Tap a board, then type your five-letter guess</p>
+            <p class="typing-hint">Your next guess</p>
+            <div id="guess-tray" class="guess-tray" aria-label="Current guess" aria-live="polite">
+              <span class="guess-slot" aria-hidden="true"></span>
+              <span class="guess-slot" aria-hidden="true"></span>
+              <span class="guess-slot" aria-hidden="true"></span>
+              <span class="guess-slot" aria-hidden="true"></span>
+              <span class="guess-slot" aria-hidden="true"></span>
+            </div>
+            <p class="typing-help">Tap a board, then type five letters. Press Enter to submit.</p>
             <input id="guess-input" class="typing-input" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" autocapitalize="characters" maxlength="5" aria-label="Current five-letter guess" />
           </div>
           <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -51,17 +50,32 @@
         </section>
 
         <section id="finale" class="finale" hidden aria-labelledby="finale-title">
-          <div class="confetti confetti-left" aria-hidden="true">✦</div>
-          <div class="confetti confetti-right" aria-hidden="true">✦</div>
+          <div class="celebration-gifs" role="group" aria-label="Celebration GIFs">
+            <img class="reaction-gif celebration-gif celebration-gif-left" src="https://cdn.7tv.app/emote/01GDGK795G000CF58E0FY6XT24/4x.avif" alt="" aria-hidden="true" />
+            <img class="reaction-gif celebration-gif celebration-gif-right" src="https://cdn.7tv.app/emote/01G3BNV55000068RCV6YVN340R/4x.avif" alt="" aria-hidden="true" />
+            <img class="reaction-gif celebration-gif celebration-gif-left-lower" src="https://cdn.7tv.app/emote/01F5VW2TKR0003RCV2Z6JBHCST/4x.avif" alt="" aria-hidden="true" />
+          </div>
           <div class="finale-hearts" aria-hidden="true"><span>♥</span><span>♥</span><span>♥</span></div>
-          <p class="section-kicker">YAY</p>
-          <h2 id="finale-title">HAPPY THREE MONTH ANNIV !<span class="sparkle-dot">.</span></h2>
+          <p class="section-kicker">All four found, soon in month four?</p>
+          <h2 id="finale-title">Happy three months anniversary!</h2>
           <p class="finale-message" id="finale-message"></p>
           <button id="play-again-button" class="primary-button" type="button">Play again <span aria-hidden="true">♥</span></button>
         </section>
       </main>
 
-      <footer class="footer-note">Psst… the last word is a little surprise <span aria-hidden="true">♡</span></footer>
+    </div>
+
+    <div id="failure-modal" class="failure-modal" hidden>
+      <div class="modal-backdrop" data-modal-dismiss aria-hidden="true"></div>
+      <section class="failure-dialog" role="dialog" aria-modal="true" aria-labelledby="failure-title">
+        <button id="failure-dismiss-button" class="modal-close" type="button" aria-label="Close message">×</button>
+        <p class="section-kicker">Round over</p>
+        <h2 id="failure-title">Nice try bro...</h2>
+        <img class="reaction-gif failure-gif" src="https://cdn.7tv.app/emote/01G3W3SZ3000086RK1WFRADV3X/4x.avif" alt="A reaction GIF for a missed round" />
+        <p class="failure-message">Nine guesses down. The words are still hiding.</p>
+        <button id="modal-restart-button" class="primary-button" type="button">Start over</button>
+        <button id="failure-review-button" class="text-button modal-review-button" type="button">Keep reviewing</button>
+      </section>
     </div>
   </body>
 </html>
